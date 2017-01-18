@@ -95,32 +95,44 @@ def main():
 		car_list_s.append(makecar('s', win))
 	
 	#Update all cars
+	car_n_level = n_level
+    	car_s_level = s_level
+    	car_e_level = e_level
+    	car_w_level = w_level
+	
 	for car in car_list_n:
 		if counter%100==0:			
-				print car.getCenter().getY()," ",car_n_level		
-		if car.getCenter().getY()<n_level and active_signal!=3 and abs(car.getCenter().getY()-car_n_level) <= 30:
-			car_n_level=car_n_level-30			
-			continue		
+			print car.getCenter().getY()," ",car_n_level		
+		if car.getCenter().getY()<n_level and active_signal!=3 and car_n_level-car.getCenter().getY() <= 30 :
+			car_n_level=car_n_level-40				
+			print "n"	
+			continue
+					
 		car.move(0,1)
+		
+	
 	for car in car_list_s:
 		if counter%100==0:
-				print car.getCenter().getY()," ",car_s_level		
-		if car.getCenter().getY()>s_level and active_signal!=1 and abs(car_s_level-car.getCenter().getY()) <= 30:
-			car_s_level=car_s_level+30			
+			print car.getCenter().getY()," ",car_s_level		
+		if car.getCenter().getY()>s_level and active_signal!=1 and car.getCenter().getY()-car_s_level <= 30:
+			print "s"
+			car_s_level=car_s_level+40			
 			continue		
 		car.move(0,-1)
 	for car in car_list_e:
 		if counter%100==0:
 			print car.getCenter().getX()," ",car_e_level			
-		if car.getCenter().getX()>e_level and active_signal!=2 and abs(car_e_level-car.getCenter().getX()) <= 30:
-			car_e_level=car_e_level+30			
+		if car.getCenter().getX()>e_level and active_signal!=2 and car.getCenter().getX()-car_e_level <= 30:
+			print "e"
+			car_e_level=car_e_level+40			
 			continue		
 		car.move(-1,0)
 	for car in car_list_w:
 		if counter%100==0:
 			print car.getCenter().getX()," ",car_w_level
-		if car.getCenter().getX()<w_level and active_signal!=0 and abs(car.getCenter().getX()-car_w_level) <= 30:
-			car_w_level=car_w_level-30			
+		if car.getCenter().getX()<w_level and active_signal!=0 and car_w_level-car.getCenter().getX() <= 30:
+			print "w"
+			car_w_level=car_w_level-40			
 			continue		
 		car.move(1,0)
 	 
@@ -142,11 +154,9 @@ def main():
     cir2 = Circle(Point(w/2-100,h/2-100), 5)
     cir2.setFill("red")
     cir2.draw(win)
-
     for i in range(46):
         cir1.move(5, 0)
         time.sleep(.05)
-
     for i in range(46):
         cir1.move(-5, 0)
         time.sleep(.05)   '''
