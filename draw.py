@@ -2,27 +2,29 @@ from graphics import *
 import time	
 import random
 import subprocess as sp
+import matplotlib as plt
+import numpy as np
 
-def makecar(d,win):
-    if d=='n':
-    	cx = win.getWidth()/2 + 25
-	cy = 0
-    elif d=='s':
-	cx = win.getWidth()/2 - 25
-	cy = win.getHeight()
-    elif d=='e':
-	cx = win.getWidth()
-	cy = win.getHeight()/2 + 25
-    elif d=='w':
-	cx = 0
-	cy = win.getHeight()/2 - 25
+class makecar:
 
-    rect = Rectangle(Point(cx-15, cy-15), Point(cx+15, cy+15))
-    rect.setFill("white")
-    rect.draw(win)
-    return rect
+	def __init__(self,d,win):
+		self.counter = 0
+		if d=='n':
+	    		cx = win.getWidth()/2 + 25
+			cy = -100
+		elif d=='s':
+			cx = win.getWidth()/2 - 25
+			cy = win.getHeight() + 100
+		elif d=='e':
+			cx = win.getWidth() + 100
+			cy = win.getHeight()/2 + 25
+		elif d=='w':
+			cx = -100
+			cy = win.getHeight()/2 - 25
 
-    
+	 	self.body = Rectangle(Point(cx-15, cy-15), Point(cx+15, cy+15))
+		self.body.setFill("white")
+ 		self.body.draw(win)
 
 
 def main():
@@ -42,11 +44,12 @@ def main():
     car_list_e = []
     car_list_w = []
     car_list_s = []
+    car_w_time = []
 
-    n_level = h/2 - 25 - 10	
-    s_level = h/2 + 25 + 10
-    e_level = w/2 + 25 + 10
-    w_level = w/2 - 25 - 10
+    n_level = h/2 - 25 - 30	
+    s_level = h/2 + 25 + 30
+    e_level = w/2 + 25 + 30
+    w_level = w/2 - 25 - 30
 
     car_n_level = n_level
     car_s_level = s_level
@@ -74,6 +77,7 @@ def main():
     counter = 0
 
     while 1==1:
+
 	if counter==1000:	
 		cir[active_signal].setFill("red")    	
 		active_signal = (active_signal+1)%4
@@ -88,59 +92,71 @@ def main():
 			car_w_level=w_level
 		counter=0
 	
-	if counter%100==0 and bool(random.getrandbits(1)):		
-		car_list_n.append(makecar('n', win))
-		car_list_e.append(makecar('e', win))
-		car_list_w.append(makecar('w', win))
-		car_list_s.append(makecar('s', win))
+	if counter%300==0 and bool(random.getrandbits(1)):
+		car=makecar('n',win)				
+		car_list_n.append(car)
+	if counter%300==0 and bool(random.getrandbits(1)):		
+		car=makecar('s',win)				
+		car_list_s.append(car)
+	if counter%300==0 and bool(random.getrandbits(1)):
+		car=makecar('w',win)				
+		car_list_w.append(car)
+	if counter%300==0 and bool(random.getrandbits(1)):
+		car=makecar('e',win)				
+		car_list_e.append(car)
 	
 	#Update all cars
-	car_n_level = n_level
-    	car_s_level = s_level
-    	car_e_level = e_level
-    	car_w_level = w_level
-	
+     
+        car_n_level = n_level
+        car_s_level = s_level
+        car_e_level = e_level
+        car_w_level = w_level
+
+
 	for car in car_list_n:
-		if counter%100==0:			
-			print car.getCenter().getY()," ",car_n_level		
-		if car.getCenter().getY()<n_level and active_signal!=3 and car_n_level-car.getCenter().getY() <= 30 :
-			car_n_level=car_n_level-40				
-			print "n"	
+		if car.body.getCenter().getY()>h+20:
+			car_w_time.append(car.counter)
+			print car.counter
+			car_list_n.remove(car)
 			continue
-					
-		car.move(0,1)
-		
-	
-	for car in car_list_s:
-		if counter%100==0:
-			print car.getCenter().getY()," ",car_s_level		
-		if car.getCenter().getY()>s_level and active_signal!=1 and car.getCenter().getY()-car_s_level <= 30:
-			print "s"
+		if car.body.getCenter().getY()<n_level and active_signal!=3 and car_n_level-car.body.getCenter().getY() <= 30:
+			car.counter+=1			
+			car_n_level=car_n_level-40			
+			continue		
+		car.body.move(0,1)
+	for car in car_list_s:		
+		if car.body.getCenter().getY()<-20:
+			car_w_time.append(car.counter)
+			print car.counter
+			car_list_s.remove(car)
+			continue			
+		if car.body.getCenter().getY()>s_level and active_signal!=1 and car.body.getCenter().getY()-car_s_level <= 30:
+			car.counter+=1			
 			car_s_level=car_s_level+40			
 			continue		
-		car.move(0,-1)
-	for car in car_list_e:
-		if counter%100==0:
-			print car.getCenter().getX()," ",car_e_level			
-		if car.getCenter().getX()>e_level and active_signal!=2 and car.getCenter().getX()-car_e_level <= 30:
-			print "e"
-			car_e_level=car_e_level+40			
+		car.body.move(0,-1)
+	for car in car_list_e:		
+		if car.body.getCenter().getX()<-20:
+			print car.counter
+			car_w_time.append(car.counter)
+			car_list_e.remove(car)
+			continue			
+		if car.body.getCenter().getX()>e_level and active_signal!=2 and car.body.getCenter().getX()-car_e_level <= 30:
+			car_e_level=car_e_level+40
+			car.counter+=1			
 			continue		
-		car.move(-1,0)
+		car.body.move(-1,0)
 	for car in car_list_w:
-		if counter%100==0:
-			print car.getCenter().getX()," ",car_w_level
-		if car.getCenter().getX()<w_level and active_signal!=0 and car_w_level-car.getCenter().getX() <= 30:
-			print "w"
+		if car.body.getCenter().getX()>w+20:
+			print car.counter
+			car_w_time.append(car.counter)
+			car_list_w.remove(car)
+			continue			
+		if car.body.getCenter().getX()<w_level and active_signal!=0 and car_w_level-car.body.getCenter().getX() <= 30:
+			car.counter+=1			
 			car_w_level=car_w_level-40			
 			continue		
-		car.move(1,0)
-	 
-
-	
-	if counter%100==0:
-		win.getMouse()
-		sp.call('clear',shell=True)	
+		car.body.move(1,0)
 	time.sleep(0.01)
 	counter=counter+1
     win.getMouse()
@@ -154,9 +170,11 @@ def main():
     cir2 = Circle(Point(w/2-100,h/2-100), 5)
     cir2.setFill("red")
     cir2.draw(win)
+
     for i in range(46):
         cir1.move(5, 0)
         time.sleep(.05)
+
     for i in range(46):
         cir1.move(-5, 0)
         time.sleep(.05)   '''
