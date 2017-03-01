@@ -4,6 +4,7 @@ import time
 import random
 import subprocess as sp
 from graphics import *
+import ip
 
 
 car_w=[]
@@ -19,6 +20,14 @@ def rotateY(x1,y1,x2,y2,theta):
 	xa=x1+(x2-x1)*cos(ang)-(y2-y1)*sin(ang)
 	ya=y1+(y2-y1)*cos(ang)+(x2-x1)*sin(ang)
 	return ya
+
+class car_pos:
+	def __init__(self):
+		self.p = []
+		self.p.append(0)
+		self.p.append(0)
+	def get_pos(self):
+		return self.p
 
 class makecar:
 
@@ -69,14 +78,13 @@ class makecar:
 
 
 def plot_graph(car_w):
-	print 'car_w'
-	print car_w
+	
 
 	fig = plt.figure(0)
 	fig.canvas.set_window_title('Waiting_time graph')
 
 	car_w.sort()		
-	print car_w
+
 	
 	plt.plot(car_w)
 	plt.ylabel('waiting time') 
@@ -87,7 +95,7 @@ def plot_graph(car_w):
 
 def main():
 
-    win = GraphWin('Simulator', 1200, 700)
+    win = GraphWin('Simulator', 1000, 1000)
    
     c=0
 	
@@ -118,6 +126,8 @@ def main():
     car_list_sr = []
     
     car_w_time = []
+    ip.init_density()
+		
 
     n_level = h/2 - 50 - 50	
     s_level = h/2 + 50 + 50
@@ -160,22 +170,106 @@ def main():
 
     counter = 0
 
+    fo = open("timer.txt", "r")
+    getVal = fo.read(3);
+  
+    
+    
     while 1==1:
     
-    	
-	if counter==1000:	
+        
+	if counter==int(getVal):	
+	
+		position = []
+		for car in car_list_n:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+		for car in car_list_nl:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+		for car in car_list_nr:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+			
+			
+		for car in car_list_s:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+		for car in car_list_sl:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+		for car in car_list_sr:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+			
+			
+		for car in car_list_w:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+		for car in car_list_wl:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+		for car in car_list_wr:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())	
+		
+		
+		for car in car_list_e:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+		for car in car_list_el:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+		for car in car_list_er:
+			p = car_pos()
+			p.p[0] = car.body.getCenter().getX()
+			p.p[1] = car.body.getCenter().getY()
+			position.append(p.get_pos())
+			
+		print position
+		
+		ip.image_processing(position)
+		
+		del position
+		
+		ip.print_density()
+		ip.init_density()
+		
+		win.getMouse()
+ 		sp.call('clear',shell=True)
+			
 		cir[active_signal].setFill("red")    	
 		active_signal = (active_signal+1)%4
 		cir[active_signal].setFill("green")
-		if active_signal==3:
-			car_n_level=n_level
-		elif active_signal==0:
-			car_e_level=e_level
-		elif active_signal==1:
-			car_s_level=s_level
-		else:
-			car_w_level=w_level
+	
 		counter=0
+		getVal = fo.read(3);
+		if(c%4==0 and c!=0):
+			pos = fo.seek(0,0);
+			getVal = fo.read(3);
+			
 		c+=1
 	
 	if counter%300==0 and bool(random.getrandbits(1)):
@@ -207,8 +301,7 @@ def main():
 		car_list_nr.append(car)
 	if counter%300==0 and bool(random.getrandbits(1)):		
 		car=makecar('sr',win)				
-		car_list_sr.append(car)
-		print 'made car sr'
+		car_list_sr.append(car)	
 	if counter%300==0 and bool(random.getrandbits(1)):
 		car=makecar('wr',win)				
 		car_list_wr.append(car)
@@ -239,7 +332,7 @@ def main():
 	for car in car_list_n:
 		if car.body.getCenter().getY()>h+20:
 			car_w_time.append(car.counter)
-			print car.counter
+			
 			car_list_n.remove(car)
 			continue
 		if car.body.getCenter().getY()<n_level and active_signal!=3 and car_n_level-car.body.getCenter().getY() <= 10:
@@ -250,7 +343,7 @@ def main():
 	for car in car_list_s:		
 		if car.body.getCenter().getY()<-20:
 			car_w_time.append(car.counter)
-			print car.counter
+			
 			car_list_s.remove(car)
 			continue			
 		if car.body.getCenter().getY()>s_level and active_signal!=1 and car.body.getCenter().getY()-car_s_level <= 10:
@@ -260,7 +353,7 @@ def main():
 		car.body.move(0,-1)
 	for car in car_list_e:		
 		if car.body.getCenter().getX()<-20:
-			print car.counter
+			
 			car_w_time.append(car.counter)
 			car_list_e.remove(car)
 			continue			
@@ -271,7 +364,7 @@ def main():
 		car.body.move(-1,0)
 	for car in car_list_w:
 		if car.body.getCenter().getX()>w+20:
-			print car.counter
+			
 			car_w_time.append(car.counter)
 			car_list_w.remove(car)
 			continue			
@@ -285,7 +378,7 @@ def main():
 	for car in car_list_nl:
 		if car.body.getCenter().getY()>h+20:
 			car_w_time.append(car.counter)
-			print car.counter
+			
 			car_list_nl.remove(car)
 			continue
 		if car.body.getCenter().getY()<n_level and active_signal!=3 and car_nl_level-car.body.getCenter().getY() <= 10:
@@ -296,7 +389,7 @@ def main():
 	for car in car_list_sl:		
 		if car.body.getCenter().getY()<-20:
 			car_w_time.append(car.counter)
-			print car.counter
+			
 			car_list_sl.remove(car)
 			continue			
 		if car.body.getCenter().getY()>s_level and active_signal!=1 and car.body.getCenter().getY()-car_sl_level <= 10:
@@ -306,7 +399,7 @@ def main():
 		car.body.move(0,-1)
 	for car in car_list_el:		
 		if car.body.getCenter().getX()<-20:
-			print car.counter
+			
 			car_w_time.append(car.counter)
 			car_list_el.remove(car)
 			continue			
@@ -317,7 +410,7 @@ def main():
 		car.body.move(-1,0)
 	for car in car_list_wl:
 		if car.body.getCenter().getX()>w+20:
-			print car.counter
+			
 			car_w_time.append(car.counter)
 			car_list_wl.remove(car)
 			continue			
@@ -330,9 +423,9 @@ def main():
 		
 		
 	for car in car_list_nr:
-		if car.body.getCenter().getY()>h+20:
+		if car.body.getCenter().getX()<-20:
 			car_w_time.append(car.counter)
-			print car.counter
+			
 			car_list_nr.remove(car)
 			continue
 		if car.body.getCenter().getY()<n_level and active_signal!=3 and car_nr_level-car.body.getCenter().getY() <= 10:
@@ -351,9 +444,9 @@ def main():
 			car.body.move(-1,0)	
 		
 	for car in car_list_sr:		
-		if car.body.getCenter().getY()<-20:
+		if car.body.getCenter().getX()>w+20:
 			car_w_time.append(car.counter)
-			print car.counter
+			
 			car_list_sr.remove(car)
 			continue			
 		if car.body.getCenter().getY()>s_level and active_signal!=1 and car.body.getCenter().getY()-car_sr_level <= 10:
@@ -372,8 +465,8 @@ def main():
 			car.body.move(1,0)
 					
 	for car in car_list_er:		
-		if car.body.getCenter().getX()<-20:
-			print car.counter
+		if car.body.getCenter().getY()<-20:
+			
 			car_w_time.append(car.counter)
 			car_list_er.remove(car)
 			continue			
@@ -393,8 +486,8 @@ def main():
 			car.body.move(0,-1)		
 		
 	for car in car_list_wr:
-		if car.body.getCenter().getX()>w+20:
-			print car.counter
+		if car.body.getCenter().getY()>h+20:
+			
 			car_w_time.append(car.counter)
 			car_list_wr.remove(car)
 			continue			
@@ -420,14 +513,13 @@ def main():
 	
 	if c==8:
 		
-		print'car_w_time'
-		print car_w_time
 		win.close()
 		plot_graph(car_w_time)
 	  	
 	
     win.getMouse()		
     time.sleep(3)
+    fo.close()
     win.close()
 
 

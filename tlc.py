@@ -4,6 +4,7 @@ h = scene.ret_h()
 w = scene.ret_w()
 win = scene.ret_win()
 
+# to return the active signal direction for a single junction
 def ret_dir(s):
 	if s.active_signal == 3:
 		return 'n'
@@ -14,10 +15,12 @@ def ret_dir(s):
 	if s.active_signal == 2:
 		return 'e'
 
+# traffic junction control
 def control():
 	sig_list = scene.def_sig()
 	
 	while 1==1:
+	
 		flag = 0
 		for s in sig_list:
 			if s.counter==s.timer:
@@ -27,10 +30,11 @@ def control():
 					flag = 1
 				s.counter = 0
 			s.draw_signal()	
-			
+			time.sleep(0.01)
 			s.counter +=1
 
-        
+
+# return the array of active signal direction for all junctions
 def ret_dir_array(sig_list):
 	active_dir = []
 	for s in sig_list:
@@ -38,6 +42,7 @@ def ret_dir_array(sig_list):
 	return active_dir
 	
 
+# signal light 
 class sLight:
 	def __init__(self,d):
 		self.counter = 0
@@ -133,6 +138,7 @@ class sLight:
 	    		self.active_signal = 1
 	    		
 	
+	# to draw signals with respective lights
 	def draw_signal(self):
 		if self.active_signal == 0:
 	    		self.cir[0] = (Circle(Point(self.x - (w/18),self.y - (h/18)), 5))
@@ -140,7 +146,7 @@ class sLight:
 	    		self.cir[0].draw(win)
 	    		
 	    	    	self.cir[1] = (Circle(Point(self.x - (w/18),self.y + (h/18)), 5))
-		    	self.cir[1].setFill("red")
+		    	self.cir[1].setFill("red")						# to be simplified - change of signal color
 		    	self.cir[1].draw(win)
 
 		    	self.cir[2] = (Circle(Point(self.x + (w/18),self.y + (h/18)), 5))
@@ -168,6 +174,7 @@ class sLight:
 			self.cir[3] = (Circle(Point(self.x + (w/18),self.y - (h/18)), 5))
 		    	self.cir[3].setFill("red")
 		    	self.cir[3].draw(win)
+		    	
 
 		if self.active_signal == 2:
 	    	
@@ -204,6 +211,7 @@ class sLight:
 			self.cir[3] = (Circle(Point(self.x + (w/18),self.y - (h/18)), 5))
 	    		self.cir[3].setFill("green")
 	    		self.cir[3].draw(win)	
-	    		
+	 
+	# to change the green signal    		
 	def change_sig(self):
 		self.active_signal = (self.active_signal + 1) % 4	 
