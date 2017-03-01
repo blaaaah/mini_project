@@ -170,6 +170,17 @@ def main():
 
     counter = 0
 
+    fo = open("timer.txt")
+    n_timer=(ip.n_density/50)*300
+    fo.write(n_timer,3);
+    s_timer=(ip.s_density/50)*300
+    fo.write(n_timer,3);
+    e_timer=(ip.e_density/50)*300
+    fo.write(n_timer,3);
+    w_timer=(ip.w_density/50)*300  
+    fo.write(n_timer,3);
+    fo.close()
+    
     fo = open("timer.txt", "r")
     getVal = fo.read(3);
   
