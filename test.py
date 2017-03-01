@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from math import *
 import time	
+import os
 import random
 import subprocess as sp
 from graphics import *
@@ -254,6 +255,8 @@ def main():
 		ip.image_processing(position)
 		
 		del position
+		
+		os.remove("timer.txt")
 		
 		ip.print_density()
 		
