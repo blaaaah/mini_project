@@ -96,7 +96,7 @@ def plot_graph(car_w):
 
 def main():
 
-    win = GraphWin('Simulator', 1000, 1000)
+    win = GraphWin('Simulator', 700, 700)
    
     c=0
 	
@@ -173,16 +173,16 @@ def main():
 
     
     fo = open("timer.txt", "r")
-    getVal = fo.read(3);
-  
-    
-    
+    getVal = fo.readline()
+    i=1
+    flag = True	
     while 1==1:
     
         
 	if counter==int(getVal):	
 	
 		position = []
+		print "if counter==int(getVal):	"
 		for car in car_list_n:
 			p = car_pos()
 			p.p[0] = car.body.getCenter().getX()
@@ -266,18 +266,22 @@ def main():
 		print 'n_den_ after', n_timer
 		
 		fin = open("timer.txt" , "w")
-		n_timer=(ip.n_density/50)*300
+		n_timer=ip.n_density*10+50
 		print 'n_timer', n_timer
 		fin.write(str(n_timer));
-		s_timer=(ip.s_density/50)*300
+		fin.write("\n");
+		s_timer=ip.s_density*10+50
 		print 's_timer', s_timer
 		fin.write(str(s_timer));
-		e_timer=(ip.e_density/50)*300
+		fin.write("\n");
+		e_timer=ip.e_density*10+50
 		print 'e_timer', e_timer
 		fin.write(str(e_timer));
-		w_timer=(ip.w_density/50)*300  
+		fin.write("\n");
+		w_timer=ip.w_density*10+50
 		print 'w_timer', w_timer
 		fin.write(str(w_timer));
+		fin.write("\n");
 		fin.close()
 		
 		
@@ -290,53 +294,69 @@ def main():
 		
 		win.getMouse()
  		sp.call('clear',shell=True)
-			
-		cir[active_signal].setFill("red")    	
-		active_signal = (active_signal+1)%4
-		cir[active_signal].setFill("green")
-	
-		counter=0
-		getVal = fo.read(3);
-		if(c%4==0 and c!=0):
-			pos = fo.seek(0,0);
-			getVal = fo.read(3);
-			
-		c+=1
-	
-	if counter%300==0 and bool(random.getrandbits(1)):
+		print 'getVal', getVal			
+		prev_active_signal = active_signal 
+		flag = not flag	
+		if (not flag) :
+			active_signal == 4
+			cir[prev_active_signal].setFill("orange")
+			cir[(prev_active_signal+1)%4].setFill("orange")
+			prev_getVal = getVal
+			getVal = 50
+
+		else:
+			active_signal = prev_active_signal   	
+			cir[active_signal].setFill("red")
+			active_signal = (active_signal+1)%4
+			cir[active_signal].setFill("green")
+			print 'getVal', getVal	
+			counter=0
+			fo=open("timer.txt", "r")
+			getVal = fo.readline();
+			print 'getVal', getVal
+			if(c%4==0 and c!=0):
+				i=0;
+				fo.close()
+				fo=open("timer.txt", "r")
+				pos = fo.seek(0,1);
+				getVal = fo.readline();
+				
+			c+=1
+		
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('n',win)				
 		car_list_n.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):		
+	if counter%100==0 and bool(random.getrandbits(1)):		
 		car=makecar('s',win)				
 		car_list_s.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('w',win)				
 		car_list_w.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('e',win)				
 		car_list_e.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('nl',win)				
 		car_list_nl.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):		
+	if counter%100==0 and bool(random.getrandbits(1)):		
 		car=makecar('sl',win)				
 		car_list_sl.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('wl',win)				
 		car_list_wl.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('el',win)				
 		car_list_el.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('nr',win)				
 		car_list_nr.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):		
+	if counter%100==0 and bool(random.getrandbits(1)):		
 		car=makecar('sr',win)				
 		car_list_sr.append(car)	
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('wr',win)				
 		car_list_wr.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('er',win)				
 		car_list_er.append(car)
 	
@@ -537,12 +557,12 @@ def main():
 		if(car.body.getCenter().getY()>=s_level):
 			car.body.move(0,1)	
 	
-	time.sleep(0.01)
+	time.sleep(0.02)
 	counter=counter+1
 	
 	
 	
-	if c==8:
+	if c==16:
 		
 		win.close()
 		plot_graph(car_w_time)
@@ -556,3 +576,4 @@ def main():
 
 main() 
 plot_graph()
+
