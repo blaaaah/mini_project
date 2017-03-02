@@ -13,13 +13,40 @@ def ret_w():
 def ret_win():
 	return win
 
+# define the signals for all junctions
 def def_sig():
 	sig_list = []
 	for i in range(16):
 		s = tlc.sLight(i+1)
 		sig_list.append(s)
 	return sig_list
+	
+# to draw the signals for all junctions
+def draw_signal(sig_list):
 
+	for s in sig_list:
+	
+		s.cir[0] = (Circle(Point(s.x - (w/18),s.y - (h/18)), 5))
+		s.cir[0].setFill("red")
+		s.cir[0].draw(win)
+
+		s.cir[1] = (Circle(Point(s.x - (w/18),s.y + (h/18)), 5))
+		s.cir[1].setFill("red")						
+		s.cir[1].draw(win)
+
+		s.cir[2] = (Circle(Point(s.x + (w/18),s.y + (h/18)), 5))
+		s.cir[2].setFill("red")
+		s.cir[2].draw(win)
+
+		s.cir[3] = (Circle(Point(s.x + (w/18),s.y - (h/18)), 5))
+		s.cir[3].setFill("red")
+		s.cir[3].draw(win)
+		
+	#	s.cir[s.active_signal].setFill("green")
+	#	s.cir[s.active_signal].draw(win)
+
+
+# to draw the roads of the scene
 def draw_scene():
 
 	
@@ -56,6 +83,7 @@ def draw_scene():
 	rect.draw(win)
 	
 
+# close the window after accepting mouse click
 def draw_close():
 
 	win.getMouse()		
