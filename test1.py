@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from math import *
 import time	
+import os
 import random
 import subprocess as sp
 from graphics import *
@@ -170,17 +171,19 @@ def main():
 
     counter = 0
 
+    
     fo = open("timer.txt", "r")
     getVal = fo.readline()
-  
-    prev_active_signal = 0
+    
     flag = True
+    prev_active_signal = 0
     while 1==1:
     
         
 	if counter==int(getVal):	
 	
 		position = []
+		print "if counter==int(getVal):	"
 		for car in car_list_n:
 			p = car_pos()
 			p.p[0] = car.body.getCenter().getX()
@@ -254,12 +257,46 @@ def main():
 		
 		del position
 		
+		os.remove("timer.txt")
+		
 		ip.print_density()
+		
+		
+		print 'n_den', ip.n_density
+		n_timer=(ip.n_density/50)*300
+		print 'n_den_ after', n_timer
+		
+		fin = open("timer.txt" , "w")
+		n_timer=ip.n_density*10+50
+		print 'n_timer', n_timer
+		fin.write(str(n_timer));
+		fin.write("\n");
+		s_timer=ip.s_density*10+50
+		print 's_timer', s_timer
+		fin.write(str(s_timer));
+		fin.write("\n");
+		e_timer=ip.e_density*10+50
+		print 'e_timer', e_timer
+		fin.write(str(e_timer));
+		fin.write("\n");
+		w_timer=ip.w_density*10+50
+		print 'w_timer', w_timer
+		fin.write(str(w_timer));
+		fin.write("\n");
+		fin.close()
+		
+		
+		
+		
 		ip.init_density()
 		
-	#	win.getMouse()
- 	#	sp.call('clear',shell=True)
-			
+		
+		
+		
+		#win.getMouse()
+ 		#sp.call('clear',shell=True)
+		print 'getVal', getVal			
+		 
 		flag = not flag	
 		if (not flag) :
 			prev_active_signal = active_signal
@@ -288,41 +325,41 @@ def main():
 				getVal = fo.readline();
 				
 			c+=1
-	
-	if counter%300==0 and bool(random.getrandbits(1)):
+		
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('n',win)				
 		car_list_n.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):		
+	if counter%100==0 and bool(random.getrandbits(1)):		
 		car=makecar('s',win)				
 		car_list_s.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('w',win)				
 		car_list_w.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('e',win)				
 		car_list_e.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('nl',win)				
 		car_list_nl.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):		
+	if counter%100==0 and bool(random.getrandbits(1)):		
 		car=makecar('sl',win)				
 		car_list_sl.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('wl',win)				
 		car_list_wl.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('el',win)				
 		car_list_el.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('nr',win)				
 		car_list_nr.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):		
+	if counter%100==0 and bool(random.getrandbits(1)):		
 		car=makecar('sr',win)				
 		car_list_sr.append(car)	
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('wr',win)				
 		car_list_wr.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('er',win)				
 		car_list_er.append(car)
 	
@@ -542,3 +579,4 @@ def main():
 
 main() 
 plot_graph()
+
