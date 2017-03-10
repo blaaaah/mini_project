@@ -139,7 +139,7 @@ def cdf():
 		p.p[1] = car.body.getCenter().getY()
 		position.append(p.get_pos())
 	
-	print position
+	
 
 	ip.image_processing(position)
 
@@ -185,11 +185,10 @@ def mycode():
 	e_ptr=(e_ptr+1)%4
 	
 	
-	
-	print 'n_den' , n_den
-	print 's_den' , s_den
 	print 'w_den' , w_den
+	print 's_den' , s_den
 	print 'e_den' , e_den
+	print 'n_den' , n_den
 	
 	adjn=numpy.mean(n_den[3][:-1])-numpy.mean(n_den[n_ptr][:-1])
 	adjw=numpy.mean(w_den[3][:-1])-numpy.mean(w_den[w_ptr][:-1])
@@ -197,23 +196,33 @@ def mycode():
 	adje=numpy.mean(e_den[3][:-1])-numpy.mean(e_den[e_ptr][:-1])
 	
 	avg = float (( n_den[n_ptr][3] + adjn + w_den[w_ptr][3] + adjw + s_den[s_ptr][3] + adjs + e_den[e_ptr][3] + adje ) / 4)
+	
+	
+	print "Average density BEFORE avg==0", avg
 	if avg == 0:
 		avg = 10
-	if (active_signal == 3):
-		rd = float(ip.n_density / avg)
+		
+	print "Average density after avg==0", avg
+	if (active_signal == 2):
+		print 'NNNNNNNNN', n_den[(n_ptr-1)%4][3]
+		rd = float(n_den[(n_ptr-1)%4][3] / avg)
+	elif (active_signal == 3):
+		rd = float(w_den[(w_ptr-1)%4][3] / avg)
 	elif (active_signal == 0):
-		rd = float(ip.w_density / avg)
+		rd = float(s_den[(s_ptr-1)%4][3] / avg)
 	elif (active_signal == 1):
-		rd = float(ip.s_density / avg)
-	elif (active_signal == 2):
-		rd = float(ip.e_density / avg)
+		rd = float(e_den[(e_ptr-1)%4][3] / avg)
 	
 	print "ADJN",adjn
 	print "ADJS",adjs
 	print "ADJW",adjw
 	print "ADJE",adje
 	
+	
+	print "RELATIVE DENSITY", rd
+	
 	expden = float(( numpy.mean(n_den[3][:-1])+numpy.mean(s_den[3][:-1])+numpy.mean(e_den[3][:-1])+numpy.mean(w_den[3][:-1]) ) / 4 )
+	print "Expected DENSITY", expden
 	cr = 4.037
 	l = 3
 	timer_val = ( (rd * expden) / (l * cr) )
@@ -257,40 +266,40 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
  	#	sp.call('clear',shell=True)
 			
 	
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('n',win)				
 		car_list_n.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):		
+	if counter%100==0 and bool(random.getrandbits(1)):		
 		car=makecar('s',win)				
 		car_list_s.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('w',win)				
 		car_list_w.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('e',win)				
 		car_list_e.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('nl',win)				
 		car_list_nl.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):		
+	if counter%100==0 and bool(random.getrandbits(1)):		
 		car=makecar('sl',win)				
 		car_list_sl.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('wl',win)				
 		car_list_wl.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('el',win)				
 		car_list_el.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('nr',win)				
 		car_list_nr.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):		
+	if counter%100==0 and bool(random.getrandbits(1)):		
 		car=makecar('sr',win)				
 		car_list_sr.append(car)	
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('wr',win)				
 		car_list_wr.append(car)
-	if counter%300==0 and bool(random.getrandbits(1)):
+	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('er',win)				
 		car_list_er.append(car)
 	
@@ -500,8 +509,8 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 	
 	
 	
-	if c==40:
-		
+	if c==80:
+		print "STANDARD DEVIATION = ",numpy.std(car_w_time)
 		win.close()
 		plot_graph(car_w_time)
 	  
@@ -578,7 +587,7 @@ class makecar:
 
 def plot_graph(car_w):
 	
-
+	
 	fig = plt.figure(0)
 	fig.canvas.set_window_title('Waiting_time graph')
 
