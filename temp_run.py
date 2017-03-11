@@ -1,3 +1,4 @@
+#IMPORTS
 import matplotlib.pyplot as plt
 from math import *
 import time	
@@ -6,9 +7,10 @@ import subprocess as sp
 from graphics import *
 import ip
 import numpy
-
 import threading
 
+
+#GLOBAL VARIABLES
 n_den = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 s_den = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 e_den = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
@@ -32,22 +34,28 @@ car_w_time = []
 cir = []
 
 checker = False
+checker2 = False
 
 n_ptr=0
 s_ptr=2
 e_ptr=1
 w_ptr=3
 
-timer_val=0
+timer_val=3
 c=0
 active_signal = 0
+car_w=[]
 
-def ret_timer_val():
-	global timer_val
-	return timer_val
-	
-	
+
+def const():
+	global checker
+	global c
+	c=c+1
+	checker = True
+	threading.Timer(timer_val+2,const).start()
+
 def cdf():
+	#GLOBAL
 	global car_list_n
 	global car_list_e
 	global car_list_w
@@ -70,8 +78,11 @@ def cdf():
 	global c
 	global active_signal
 
-	c=c+1
-	position = []
+
+	c=c+1			#TO COUNT CYCLES
+	position = []   #TO STORE CENTERS
+	
+	#GET CENTERS OF ALL CARS FOR IP
 	for car in car_list_n:
 		p = car_pos()
 		p.p[0] = car.body.getCenter().getX()
@@ -148,12 +159,15 @@ def cdf():
 	ip.print_density()
 	
    	
-   	checker = True
+   	checker = True		#CHANGE TRAFFIC LIGHT IN GUI THREAD
 	
 	mycode()
 	
 def mycode():
+
+	#GLOBAL
 	global active_signal
+	global next_active_signal
 	global n_den
 	global s_den
 	global e_den
@@ -164,8 +178,8 @@ def mycode():
 	global e_ptr
 	global w_ptr
 	global timer_val
-				
-						
+	global c
+							
 	for j in range(3):
 		n_den[n_ptr][j] = n_den[n_ptr][j+1]
 		w_den[w_ptr][j] = w_den[w_ptr][j+1]
@@ -190,54 +204,56 @@ def mycode():
 	print 'e_den' , e_den
 	print 'n_den' , n_den
 	
-	adjn=numpy.mean(n_den[3][:-1])-numpy.mean(n_den[n_ptr][:-1])
-	adjw=numpy.mean(w_den[3][:-1])-numpy.mean(w_den[w_ptr][:-1])
-	adjs=numpy.mean(s_den[3][:-1])-numpy.mean(s_den[s_ptr][:-1])
-	adje=numpy.mean(e_den[3][:-1])-numpy.mean(e_den[e_ptr][:-1])
-	
-	avg = float (( n_den[n_ptr][3] + adjn + w_den[w_ptr][3] + adjw + s_den[s_ptr][3] + adjs + e_den[e_ptr][3] + adje ) / 4)
-	
-	
-	print "Average density BEFORE avg==0", avg
-	if avg == 0:
-		avg = 10
+	if c>12:
+		adjn=numpy.mean(n_den[3][:-1])-numpy.mean(n_den[n_ptr][:-1])
+		adjw=numpy.mean(w_den[3][:-1])-numpy.mean(w_den[w_ptr][:-1])
+		adjs=numpy.mean(s_den[3][:-1])-numpy.mean(s_den[s_ptr][:-1])
+		adje=numpy.mean(e_den[3][:-1])-numpy.mean(e_den[e_ptr][:-1])
 		
-	print "Average density after avg==0", avg
-	if (active_signal == 2):
-		print 'NNNNNNNNN', n_den[(n_ptr-1)%4][3]
-		rd = float(n_den[(n_ptr-1)%4][3] / avg)
-	elif (active_signal == 3):
-		rd = float(w_den[(w_ptr-1)%4][3] / avg)
-	elif (active_signal == 0):
-		rd = float(s_den[(s_ptr-1)%4][3] / avg)
-	elif (active_signal == 1):
-		rd = float(e_den[(e_ptr-1)%4][3] / avg)
+		avg = float (( n_den[n_ptr][3] + adjn + w_den[w_ptr][3] + adjw + s_den[s_ptr][3] + adjs + e_den[e_ptr][3] + adje ) / 4)
+		
+		if active_signal == -1:
+			signal = next_active_signal
+		else:
+			signal = active_signal
+		if (signal == 2):
+			rd = float(n_den[(n_ptr-1)%4][3] / avg)
+		elif (signal == 3):
+			rd = float(w_den[(w_ptr-1)%4][3] / avg)
+		elif (signal == 0):
+			rd = float(s_den[(s_ptr-1)%4][3] / avg)
+		elif (signal == 1):
+			rd = float(e_den[(e_ptr-1)%4][3] / avg)
+		
+		print "ADJN",adjn
+		print "ADJS",adjs
+		print "ADJW",adjw
+		print "ADJE",adje
+		
+		
+		print "RELATIVE DENSITY", rd
+		
+		expden = float(( numpy.mean(n_den[3][:-1])+numpy.mean(s_den[3][:-1])+numpy.mean(e_den[3][:-1])+numpy.mean(w_den[3][:-1]) ) / 4 )
+		print "Expected DENSITY", expden
+		cr = 4.037
+		l = 3
+		timer_val = ( (rd * expden) / (l * cr) )
+		if timer_val == 0:
+			timer_val = 3
+	else:
+		timer_val = 3
 	
-	print "ADJN",adjn
-	print "ADJS",adjs
-	print "ADJW",adjw
-	print "ADJE",adje
-	
-	
-	print "RELATIVE DENSITY", rd
-	
-	expden = float(( numpy.mean(n_den[3][:-1])+numpy.mean(s_den[3][:-1])+numpy.mean(e_den[3][:-1])+numpy.mean(w_den[3][:-1]) ) / 4 )
-	print "Expected DENSITY", expden
-	cr = 4.037
-	l = 3
-	timer_val = ( (rd * expden) / (l * cr) )
-	if timer_val == 0:
-		timer_val = 10
 	print "TIMER VALUE = ",timer_val
-	threading.Timer(timer_val,cdf).start()
-	
-	
+	threading.Timer(timer_val+2,cdf).start()
 
-car_w=[]
 
+def changelight():
+	global checker2
+	checker2 = True
 
 def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 
+	#GLOBAL VARIABLES
     global car_list_n
     global car_list_e
     global car_list_w
@@ -249,6 +265,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
     global car_list_sl
 
     global active_signal
+    global next_active_signal
     global car_list_nr
     global car_list_er
     global car_list_wr
@@ -260,12 +277,12 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
     global timer_val
     global c
     global checker
+    global checker2
+
     while 1==1:
 		
-	#	win.getMouse()
- 	#	sp.call('clear',shell=True)
 			
-	
+	#Generate cars randomly
 	if counter%100==0 and bool(random.getrandbits(1)):
 		car=makecar('n',win)				
 		car_list_n.append(car)
@@ -303,34 +320,45 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 		car=makecar('er',win)				
 		car_list_er.append(car)
 	
-	#Update all cars
+
+	#Update all car levels 
      
-        car_n_level = n_level
-        car_s_level = s_level
-        car_e_level = e_level
-        car_w_level = w_level
-        
-        car_nl_level = n_level
-    	car_sl_level = s_level
-    	car_el_level = e_level
-    	car_wl_level = w_level
+	car_n_level = n_level
+	car_s_level = s_level
+	car_e_level = e_level
+	car_w_level = w_level
+	    
+	car_nl_level = n_level
+	car_sl_level = s_level
+	car_el_level = e_level
+	car_wl_level = w_level
 
 	car_nr_level = n_level
-    	car_sr_level = s_level
-    	car_er_level = e_level
-    	car_wr_level = w_level
+	car_sr_level = s_level
+	car_er_level = e_level
+	car_wr_level = w_level
 
-	
+	#CHANGE GREEN LIGHT TO RED 
 	if checker == True:
 		cir[active_signal].setFill("red")
-		active_signal = (active_signal+1)%4
-		cir[active_signal].setFill("green")
+		next_active_signal = (active_signal+1)%4 
+		active_signal = -1
+		cir[next_active_signal].setFill("orange")
 		checker = False
+		threading.Timer(2, changelight).start()  #TRANSITION TIME B/W SIGNAL
 
+	#CHANGE RED LIGHT TO GREEN
+	if checker2 == True:
+		cir[next_active_signal].setFill("green")
+		active_signal = next_active_signal
+		next_active_signal = -1
+		checker2 = False
+
+
+	#UPDATE CAR POSITION
 	for car in car_list_n:
 		if car.body.getCenter().getY()>h+20:
 			car_w_time.append(car.counter)
-			
 			car_list_n.remove(car)
 			continue
 		if car.body.getCenter().getY()<n_level and active_signal!=3 and car_n_level-car.body.getCenter().getY() <= 10:
@@ -504,13 +532,44 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 		if(car.body.getCenter().getY()>=s_level):
 			car.body.move(0,1)	
 	
+
+	
 	time.sleep(0.005)
 	counter=counter+1
 	
-	
-	
+	#START COUNTING WAITING TIME ONCE ALGORITHM KICKS IN !!NOTE - COMMENT OUT FOR FIXED TIMER
+	if c==4:
+		for car in car_list_nr:
+			car.counter=0
+		for car in car_list_sr:
+			car.counter=0
+		for car in car_list_wr:
+			car.counter=0
+		for car in car_list_er:
+			car.counter=0
+		for car in car_list_nl:
+			car.counter=0
+		for car in car_list_sl:
+			car.counter=0
+		for car in car_list_wl:
+			car.counter=0
+		for car in car_list_el:
+			car.counter=0
+		for car in car_list_n:
+			car.counter=0
+		for car in car_list_s:
+			car.counter=0
+		for car in car_list_e:
+			car.counter=0
+		for car in car_list_w:
+			car.counter=0
+
+	#PRINT STANDARD DEVIATION
 	if c==80:
+		print "-----------------------------------------"
+		print "MEAN = ",numpy.mean(car_w_time)
 		print "STANDARD DEVIATION = ",numpy.std(car_w_time)
+		print "-----------------------------------------"
 		win.close()
 		plot_graph(car_w_time)
 	  
@@ -603,6 +662,7 @@ def plot_graph(car_w):
 
 def main():
 
+    #GLOBAL VARIABLES
     global active_signal
     global n_den
     global s_den
@@ -614,21 +674,6 @@ def main():
     global e_ptr
     global w_ptr
     global timer_val			
-
-
-    win = GraphWin('Simulator', 1000, 1000)
-	
-    w=win.getWidth()
-    h=win.getHeight()
-    
-    rect = Rectangle(Point(0, h/2-100), Point(w, h/2+100))
-    rect.setFill("black")
-    rect.draw(win)
-
-    rect = Rectangle(Point(w/2-100, 0), Point(w/2+100, h))
-    rect.setFill("black")
-    rect.draw(win)
-    
     global car_list_n
     global car_list_e
     global car_list_w
@@ -645,7 +690,22 @@ def main():
     global car_list_sr
     
     global car_w_time 
-		
+	
+    #DRAW SCENE
+    win = GraphWin('Simulator', 1000, 1000)
+	
+    w=win.getWidth()
+    h=win.getHeight()
+    
+    rect = Rectangle(Point(0, h/2-100), Point(w, h/2+100))
+    rect.setFill("black")
+    rect.draw(win)
+
+    rect = Rectangle(Point(w/2-100, 0), Point(w/2+100, h))
+    rect.setFill("black")
+    rect.draw(win)
+    
+    	
 
     n_level = h/2 - 50 - 50	
     s_level = h/2 + 50 + 50
@@ -686,26 +746,17 @@ def main():
     cir[3].setFill("green")
     cir[3].draw(win)
 
-    counter = 0
 
-
-  
+    counter = 0  
     prev_active_signal = 0
     flag = True
 
     
-    threading.Timer(timer_val, cdf).start()
+    #threading.Timer(timer_val, cdf).start()			#VARIABLE TIMER
+    threading.Timer(timer_val, const).start()			#FIXED TIMER
     func(win,h,w,counter,cir,n_level,w_level,s_level,e_level)
  
 
-
-
-
-
-
-
-	
-	
     win.getMouse()		
     time.sleep(3)
     win.close()
@@ -713,3 +764,4 @@ def main():
 
 main() 
 plot_graph()
+
