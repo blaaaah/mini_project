@@ -1,6 +1,7 @@
 from graphics import *
 import tlc
 win = GraphWin('Simulator', 700, 700)
+win.master.geometry('%dx%d+%d+%d' % (700, 700, 100, 50))
 w=win.getWidth()
 h=win.getHeight()
 sig_list=[]
@@ -86,6 +87,8 @@ def draw_scene():
 	rect = Rectangle(Point(0,7*(h/9)), Point(w,8*(h/9)))
    	rect.setFill("black")
 	rect.draw(win)
+
+	return win
 	
 
 # close the window after accepting mouse click
