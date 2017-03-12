@@ -4,6 +4,12 @@ win = GraphWin('Simulator', 1000, 1000)
 w=win.getWidth()
 h=win.getHeight()
 
+sig_list = []
+
+def ret_sig_list():
+	global sig_list
+	return sig_list
+	
 def ret_h():                              
 	return h
 
@@ -15,14 +21,17 @@ def ret_win():
 
 # define the signals for all junctions
 def def_sig():
-	sig_list = []
+	global sig_list
 	for i in range(16):
 		s = tlc.sLight(i+1)
 		sig_list.append(s)
 	return sig_list
 	
+	
 # to draw the signals for all junctions
 def draw_signal(sig_list):
+
+	
 
 	for s in sig_list:
 	
@@ -85,9 +94,8 @@ def draw_scene():
 
 # close the window after accepting mouse click
 def draw_close():
-
 	win.getMouse()		
-    	time.sleep(3)
-        win.close()
+	time.sleep(3)
+	win.close()
 
 
