@@ -4,9 +4,14 @@ import random
 import threading
 import gtk # python-gtk2
 from math import *
-
-h=700
-w=700
+def rotateXY(x1,y1,x2,y2,theta):
+	ang=radians(theta)
+	xa=x1+(x2-x1)*cos(ang)-(y2-y1)*sin(ang)
+	ya=y1+(y2-y1)*cos(ang)+(x2-x1)*sin(ang)
+	return xa , ya
+	
+h=1000
+w=1000
 win=0
 sourcelist=[((7*w)/36,0),((15*w)/36,0),((23*w)/36,0),((31*w)/36,0),(0,(5*h)/36),(w,(7*h)/36),(0,(13*h)/36),(w,(15*h)/36),(0,(21*h)/36),(w,(23*h)/36),(0,(29*h)/36),(w,(31*h)/36),((5*w)/36,h),((13*w/36),h),((21*w)/36,h),((29*w)/36,h)]
 
@@ -27,6 +32,10 @@ class makecar:
 		self.sig_flag=0						# Used in checkmove
 		self.cc=0							# All parameters starting with c used for circular move
 		self.pc=0
+		self.cxc = 0
+		self.cyc = 0
+		self.signal_x=0
+		self.signal_y=0
 		self.csf=0
 		self.ctheta=0
 		self.wtime=0						# Track stationary time
@@ -43,28 +52,79 @@ class makecar:
 
 	def circular_move(self, direction):		#SET CXC CYC AND CSF for circular rotation
 		if direction.imag==1:
-			self.csf = (3*h)/36
+			self.csf = (3*h)/36		#right turn
 			self.cthetainc = +1
+
 		else:
-			self.csf = h/36
+			self.csf = h/36			#left turn
 			self.cthetainc = -1
+
+
 		self.pc = -1*direction*self.csf
-		
-		
+		adj = self.make_complex(self.update)*self.csf*direction
+ 		self.cxc, self.cyc = self.body.getCenter().getX() + adj.real, self.body.getCenter().getY() + adj.imag
+
 
 	def rotate(self):
 		ang=radians(self.cthetainc) 
-		self.cc = self.pc*cmath.rect(1,ang)
+		if (self.prev[0]==0) and (self.prev[1]== -1) :
+			
+			if (self.update[0]==-1): # left turn
+				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
+				self.body.move(-1*abs(x-self.body.getCenter().getX()),-1*abs(y-self.body.getCenter().getY()))
+					
+				
+			if (self.update[0]==1): # right turn
+				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
+				self.body.move(1*abs(x-self.body.getCenter().getX()),-1*abs(y-self.body.getCenter().getY()))
+
+
+		if (self.prev[0]==0) and (self.prev[1]== 1) :
+			
+			if (self.update[0]==1): # left turn
+				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
+				self.body.move(1*abs(x-self.body.getCenter().getX()),1*abs(y-self.body.getCenter().getY()))
+					
+				
+			if (self.update[0]==-1): # right turn
+				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
+				self.body.move(-1*abs(x-self.body.getCenter().getX()),1*abs(y-self.body.getCenter().getY()))
+
+		if (self.prev[0]==1) and (self.prev[1]== 0) :
+			
+			if (self.update[1]==-1): # left turn
+				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
+				self.body.move(1*abs(x-self.body.getCenter().getX()),-1*abs(y-self.body.getCenter().getY()))
+					
+				
+			if (self.update[1]==1): # right turn
+				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
+				self.body.move(1*abs(x-self.body.getCenter().getX()),1*abs(y-self.body.getCenter().getY()))
+
+		if (self.prev[0]==-1) and (self.prev[1]== 0) :
+			
+			if (self.update[1]==1): # left turn
+				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
+				self.body.move(-1*abs(x-self.body.getCenter().getX()),1*abs(y-self.body.getCenter().getY()))
+					
+				
+			if (self.update[1]==-1): # right turn
+				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
+				self.body.move(-1*abs(x-self.body.getCenter().getX()),-1*abs(y-self.body.getCenter().getY()))
+
+	#	self.cc = self.pc*cmath.rect(1,ang)
 		self.ctheta+=self.cthetainc
-		up = self.cc - self.pc
-		self.body.move(round(up.real), round(up.imag))
-		self.pc = self.cc
+	#	up = self.cc - self.pc
+
+	
+	#	self.pc = self.cc
 		
 		if abs(self.ctheta)==90:		#RESET
 			self.ctheta=0
 			self.csf=0
 			self.sig_flag=3
-
+			self.signal_x = 0
+			self.signal_y = 0
 	def checkmove(self):
 		#Check for neighbouring car
 		check = tuple([15*x for x in self.update])
@@ -120,7 +180,9 @@ class makecar:
 		
 		if choice.imag != 0:
 			self.circular_move(choice)
+		
 		self.prev = self.update
+		
 		present = self.make_complex(self.update)*choice
 		update=[0,0]
 		update[0]=present.real
