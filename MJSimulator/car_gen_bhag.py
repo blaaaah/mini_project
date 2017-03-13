@@ -67,50 +67,35 @@ class makecar:
 
 	def rotate(self):
 		ang=radians(self.cthetainc) 
+		x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
+		x , y = abs(x-self.body.getCenter().getX()), abs(y-self.body.getCenter().getY())
 		if (self.prev[0]==0) and (self.prev[1]== -1) :
 			
 			if (self.update[0]==-1): # left turn
-				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
-				self.body.move(-1*abs(x-self.body.getCenter().getX()),-1*abs(y-self.body.getCenter().getY()))
-					
-				
+				self.body.move(-1*x,-1*y)
 			if (self.update[0]==1): # right turn
-				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
-				self.body.move(1*abs(x-self.body.getCenter().getX()),-1*abs(y-self.body.getCenter().getY()))
-
-
+				self.body.move(1*x,-1*y)
+				
 		if (self.prev[0]==0) and (self.prev[1]== 1) :
 			
 			if (self.update[0]==1): # left turn
-				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
-				self.body.move(1*abs(x-self.body.getCenter().getX()),1*abs(y-self.body.getCenter().getY()))
-					
-				
+				self.body.move(1*x,1*y)
 			if (self.update[0]==-1): # right turn
-				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
-				self.body.move(-1*abs(x-self.body.getCenter().getX()),1*abs(y-self.body.getCenter().getY()))
+				self.body.move(-1*x,1*y)
 
 		if (self.prev[0]==1) and (self.prev[1]== 0) :
 			
 			if (self.update[1]==-1): # left turn
-				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
-				self.body.move(1*abs(x-self.body.getCenter().getX()),-1*abs(y-self.body.getCenter().getY()))
-					
-				
+				self.body.move(1*x,-1*y)
 			if (self.update[1]==1): # right turn
-				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
-				self.body.move(1*abs(x-self.body.getCenter().getX()),1*abs(y-self.body.getCenter().getY()))
+				self.body.move(1*x,1*y)
 
 		if (self.prev[0]==-1) and (self.prev[1]== 0) :
 			
 			if (self.update[1]==1): # left turn
-				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
-				self.body.move(-1*abs(x-self.body.getCenter().getX()),1*abs(y-self.body.getCenter().getY()))
-					
-				
+				self.body.move(-1*x,1*y)
 			if (self.update[1]==-1): # right turn
-				x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
-				self.body.move(-1*abs(x-self.body.getCenter().getX()),-1*abs(y-self.body.getCenter().getY()))
+				self.body.move(-1*x,-1*y)
 
 	#	self.cc = self.pc*cmath.rect(1,ang)
 		self.ctheta+=self.cthetainc
