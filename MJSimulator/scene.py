@@ -1,19 +1,12 @@
 from graphics import *
 import tlc
-win = GraphWin('Simulator', 700, 700)
-win.master.geometry('%dx%d+%d+%d' % (700, 700, 100, 50))
+win = GraphWin('Simulator', 630, 630)
+win.master.geometry('%dx%d+%d+%d' % (630, 630, 100, 50))
 w=win.getWidth()
 h=win.getHeight()
+tlc.initWindow(h,w,win)
 sig_list=[]
 
-def ret_h():                              
-	return h
-
-def ret_w():
-	return w
-	
-def ret_win():
-	return win
 
 # define the signals for all junctions
 def def_sig():

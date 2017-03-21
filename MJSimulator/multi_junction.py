@@ -1,14 +1,14 @@
 from graphics import *
-import tlc
 import scene   
-import car_master 
+import car_gen_bhag as car_master 
 import threading
 from PIL import Image as NewImage
 import random
 import time
 
-def main():
 
+def main():
+	
 	counter=0
 	car_list=[]
 
@@ -17,6 +17,7 @@ def main():
 	scene.draw_signal(sig_list)
 	w=win.getWidth()
 	h=win.getHeight()
+	car_master.initwindow(h,w)
 
 	for s in sig_list:
 		threading.Timer(3, s.const).start()
@@ -24,10 +25,11 @@ def main():
 	while 1==1:	
 		
 		for car in car_list:
-			car.move()
+			if not car.move():
+				del car
 
 		#Generate cars randomly
-		if counter%100==0 and bool(random.getrandbits(1)):
+		if counter%50==0 and bool(random.getrandbits(1)):
 			car=car_master.makecar(win)				
 			car_list.append(car)
 
