@@ -1,4 +1,5 @@
 from graphics import *
+import tlc
 import scene   
 import car_gen_bhag as car_master 
 import threading
@@ -6,9 +7,31 @@ from PIL import Image as NewImage
 import random
 import time
 
+ #!/usr/bin/python
+'''
+import mysql.connector as mc 
 
+
+# Open database connection
+db = mc.connect("localhost","node","root","1234")
+
+# prepare a cursor object using cursor() method
+cursor = db.cursor()
+
+# execute SQL query using execute() method.
+cursor.execute("SELECT VERSION()")
+
+# Fetch a single row using fetchone() method.
+data = cursor.fetchone()
+
+print "Database version : %s " % data
+
+# disconnect from server
+cursor.close()
+db.close()
+'''
 def main():
-	
+
 	counter=0
 	car_list=[]
 
@@ -17,7 +40,6 @@ def main():
 	scene.draw_signal(sig_list)
 	w=win.getWidth()
 	h=win.getHeight()
-	car_master.initwindow(h,w)
 
 	for s in sig_list:
 		threading.Timer(3, s.const).start()
@@ -29,7 +51,7 @@ def main():
 				del car
 
 		#Generate cars randomly
-		if counter%50==0 and bool(random.getrandbits(1)):
+		if counter%10==0 and bool(random.getrandbits(1)):
 			car=car_master.makecar(win)				
 			car_list.append(car)
 

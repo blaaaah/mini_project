@@ -5,15 +5,11 @@ import threading
 import gtk # python-gtk2
 from math import *
 
+h=700
+w=700
 win=0
 sourcelist=[((7*w)/36,0),((15*w)/36,0),((23*w)/36,0),((31*w)/36,0),(0,(5*h)/36),(w,(7*h)/36),(0,(13*h)/36),(w,(15*h)/36),(0,(21*h)/36),(w,(23*h)/36),(0,(29*h)/36),(w,(31*h)/36),((5*w)/36,h),((13*w/36),h),((21*w)/36,h),((29*w)/36,h)]
 track = 0
-
-def initwindow(height, width):
-	global h
-	global w
-	h=height
-	w=width
 
 
 def get_pixel_colour(i_x, i_y):

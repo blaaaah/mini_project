@@ -1,12 +1,19 @@
 from graphics import *
 import tlc
-win = GraphWin('Simulator', 630, 630)
-win.master.geometry('%dx%d+%d+%d' % (630, 630, 100, 50))
+win = GraphWin('Simulator', 900, 900)
+win.master.geometry('%dx%d+%d+%d' % (900, 900, 100, 50))
 w=win.getWidth()
 h=win.getHeight()
-tlc.initWindow(h,w,win)
 sig_list=[]
 
+def ret_h():                              
+	return h
+
+def ret_w():
+	return w
+	
+def ret_win():
+	return win
 
 # define the signals for all junctions
 def def_sig():
@@ -16,9 +23,6 @@ def def_sig():
 		sig_list.append(s)
 	return sig_list
 
-def ret_sig_list():
-	global sig_list
-	return sig_list
 	
 # to draw the signals for all junctions
 def draw_signal(sig_list):
@@ -41,8 +45,8 @@ def draw_signal(sig_list):
 		s.cir[3].setFill("red")
 		s.cir[3].draw(win)
 		
-	#	s.cir[s.active_signal].setFill("green")
-	#	s.cir[s.active_signal].draw(win)
+		s.cir[s.active_signal].setFill("green")
+		
 
 
 # to draw the roads of the scene
@@ -83,12 +87,3 @@ def draw_scene():
 
 	return win
 	
-
-# close the window after accepting mouse click
-def draw_close():
-
-	win.getMouse()		
-    	time.sleep(3)
-        win.close()
-
-

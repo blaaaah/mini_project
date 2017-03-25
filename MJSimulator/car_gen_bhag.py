@@ -7,28 +7,17 @@ from math import *
 
 changeX = 0
 changeY = 0
-win=0
-wtime=[]
-sourcelist = []
-h=630
-w=630
-siglist = [(i*h)/9 for i in range(0,9)]
-
 def rotateXY(x1,y1,x2,y2,theta):
 	ang=radians(theta)
 	xa=x1+(x2-x1)*cos(ang)-(y2-y1)*sin(ang)
 	ya=y1+(y2-y1)*cos(ang)+(x2-x1)*sin(ang)
 	return xa , ya
 	
-
-def initwindow(height, width):
-	global h
-	global w
-	global sourcelist
-	h=height
-	w=width
-	sourcelist=[((7*w)/36,0),((15*w)/36,0),((23*w)/36,0),((31*w)/36,0),(0,(5*h)/36),(w,(7*h)/36),(0,(13*h)/36),(w,(15*h)/36),(0,(21*h)/36),(w,(23*h)/36),(0,(29*h)/36),(w,(31*h)/36),((5*w)/36,h),((13*w/36),h),((21*w)/36,h),((29*w)/36,h)]
-
+h=900
+w=900
+win=0
+wtime=[]
+sourcelist=[((7*w)/36,0),((15*w)/36,0),((23*w)/36,0),((31*w)/36,0),(0,(5*h)/36),(w,(7*h)/36),(0,(13*h)/36),(w,(15*h)/36),(0,(21*h)/36),(w,(23*h)/36),(0,(29*h)/36),(w,(31*h)/36),((5*w)/36,h),((13*w/36),h),((21*w)/36,h),((29*w)/36,h)]
 
 
 def get_pixel_colour(i_x, i_y):
@@ -41,7 +30,6 @@ def get_pixel_colour(i_x, i_y):
 class makecar:
 	def __init__(self, win):
 
-		global sourcelist
 		self.source=sourcelist[int(random.getrandbits(4))]
 		self.body = Rectangle(Point(self.source[0]-5,self.source[1]-5), Point(self.source[0]+5,self.source[1]+5))
 		self.body.setFill("white")
@@ -53,7 +41,7 @@ class makecar:
 		self.csf=0
 		self.ctheta=0
 		self.wtime=0						# Track stationary time
-		self.cthetainc=0
+		self.cthetainc = 1
 		self.win = win
 
 		if self.source[0] == 0:
@@ -75,14 +63,18 @@ class makecar:
 			self.cthetainc = -1
 
 		adj = self.make_complex(self.update)*self.csf*direction
-		self.cxc, self.cyc = self.findclosest(self.body.getCenter().getX(),self.body.getCenter().getY())
+		self.cxc, self.cyc = self.body.getCenter().getX() + adj.real, self.body.getCenter().getY() + adj.imag
+# 		for x in range(-5,6): 
+# 			if (self.body.getCenter().getX() + x) % round(h/36) == 0:
+# 				 for y in range(-5,6):
+# 				 	if (self.body.getCenter().getY() + y) % round(h/36) == 0:
+# 						print "EKEKEKEK"
+# 						self.cxc, self.cyc = self.body.getCenter().getX() + x, self.body.getCenter().getY() + y
+# 						print "CXC : " ,self.cxc,"CYC : ", self.cyc
 
-	def findclosest(self,cx,cy):
-		return min(siglist, key=lambda x:abs(x-cx)), min(siglist, key=lambda y:abs(y-cy))
- 		
 	def rotate(self):
-		ang=radians(self.cthetainc) 
-		x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),1)
+		
+		x , y = rotateXY(self.cxc,self.cyc,self.body.getCenter().getX(),self.body.getCenter().getY(),self.cthetainc)
 		x , y = abs(x-self.body.getCenter().getX()), abs(y-self.body.getCenter().getY())
 
 		self.body.move(self.up.real*x,self.up.imag*y)
@@ -92,7 +84,14 @@ class makecar:
 		
 		if abs(self.ctheta)==90:
 				#RESET
-
+			
+			pos = self.make_complex(self.prev)*self.csf
+			print "POS:", pos
+			self.body.undraw()
+			self.body = Rectangle(Point(self.cxc+pos.real-5,self.cyc+pos.imag-5), Point(self.cxc+pos.real+5,self.cyc+pos.imag+5))
+			self.body.setFill("white")
+	 		self.body.draw(self.win)
+			
 			self.ctheta=0
 			self.csf=0
 			self.sig_flag=3
@@ -120,18 +119,17 @@ class makecar:
 				return True
 			else:
 				self.sig_flag=2
-
 				return True
 		#Car in junction region
 		if self.sig_flag==2:
-			if get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(0,0,0):
+			if get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(0,0,0) or get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(255,255,255):
 				return True
 			else:
 				self.sig_flag=3
 				return True
 		#Wrong light checked - Ignore value
 		if self.sig_flag==3:
-			if get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(0,0,0) or get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(217,217,217) :
+			if get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(0,0,0) or get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(217,217,217):
 				self.sig_flag=0
 				return True
 			else:
@@ -139,13 +137,23 @@ class makecar:
 
 		#Check right				
 		if get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(255,0,0):
-			return False
-		elif get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(0,128,0):
-			self.updateupdate()			
-			self.sig_flag=1
-		
+			if (c[0] % (w/36) ==0) and (c[1] % (h/36) ==0):
+				print "leeel"
+				return False
+			else:
+				print "loool"
+				return True
+		if get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(0,128,0):
+			if (c[0] % (w/36) ==0) and (c[1] % (h/36) ==0):	
+				self.updateupdate()			
+				self.sig_flag=1
+			
 		return True
 	
+
+
+
+
 	def updateupdate(self):
 		choices = [complex(0,-1),complex(1,0),complex(1,0),complex(0,1)]
 		choice = choices[int(random.getrandbits(2))]		
