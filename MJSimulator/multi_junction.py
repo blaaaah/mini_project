@@ -6,6 +6,7 @@ import threading
 from PIL import Image as NewImage
 import random
 import time
+import ip
 
  #!/usr/bin/python
 '''
@@ -44,6 +45,8 @@ def main():
 	for s in sig_list:
 		threading.Timer(3, s.const).start()
 	
+	fo = open("rand_car.txt","r")
+	
 	while 1==1:	
 		
 		for car in car_list:
@@ -51,19 +54,26 @@ def main():
 				del car
 
 		#Generate cars randomly
-		if counter%10==0 and bool(random.getrandbits(1)):
+		if counter%10==0 and bool(int(fo.read())):
 			car=car_master.makecar(win)				
 			car_list.append(car)
 
+		
 		for s in sig_list:
+			
 			if s.checker == True:
 				s.change_sig()
-				s.checker = False
+				
+		
+			if s.checker2 == True:
+				ip.img_process(s)
+				s.change_orange()
 
 		counter = counter+1
 		time.sleep(0.005)
 
-		
+	
+	fo.close()
 
 
 main()

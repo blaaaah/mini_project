@@ -5,20 +5,17 @@ import threading
 import gtk # python-gtk2
 from math import *
 
-changeX = 0
-changeY = 0
 def rotateXY(x1,y1,x2,y2,theta):
 	ang=radians(theta)
 	xa=x1+(x2-x1)*cos(ang)-(y2-y1)*sin(ang)
 	ya=y1+(y2-y1)*cos(ang)+(x2-x1)*sin(ang)
 	return xa , ya
 	
-h=900
-w=900
+h=720
+w=720
 win=0
 wtime=[]
 sourcelist=[((7*w)/36,0),((15*w)/36,0),((23*w)/36,0),((31*w)/36,0),(0,(5*h)/36),(w,(7*h)/36),(0,(13*h)/36),(w,(15*h)/36),(0,(21*h)/36),(w,(23*h)/36),(0,(29*h)/36),(w,(31*h)/36),((5*w)/36,h),((13*w/36),h),((21*w)/36,h),((29*w)/36,h)]
-
 
 def get_pixel_colour(i_x, i_y):
 	i_y += 78
@@ -64,13 +61,6 @@ class makecar:
 
 		adj = self.make_complex(self.update)*self.csf*direction
 		self.cxc, self.cyc = self.body.getCenter().getX() + adj.real, self.body.getCenter().getY() + adj.imag
-# 		for x in range(-5,6): 
-# 			if (self.body.getCenter().getX() + x) % round(h/36) == 0:
-# 				 for y in range(-5,6):
-# 				 	if (self.body.getCenter().getY() + y) % round(h/36) == 0:
-# 						print "EKEKEKEK"
-# 						self.cxc, self.cyc = self.body.getCenter().getX() + x, self.body.getCenter().getY() + y
-# 						print "CXC : " ,self.cxc,"CYC : ", self.cyc
 
 	def rotate(self):
 		
@@ -78,15 +68,11 @@ class makecar:
 		x , y = abs(x-self.body.getCenter().getX()), abs(y-self.body.getCenter().getY())
 
 		self.body.move(self.up.real*x,self.up.imag*y)
-
 		self.ctheta+=self.cthetainc
 
-		
 		if abs(self.ctheta)==90:
-				#RESET
-			
+			#RESET
 			pos = self.make_complex(self.prev)*self.csf
-			print "POS:", pos
 			self.body.undraw()
 			self.body = Rectangle(Point(self.cxc+pos.real-5,self.cyc+pos.imag-5), Point(self.cxc+pos.real+5,self.cyc+pos.imag+5))
 			self.body.setFill("white")
@@ -101,12 +87,14 @@ class makecar:
 		#Check for neighbouring car
 		check = tuple([15*x for x in self.update])
 		c = [ self.body.getCenter().getX(),self.body.getCenter().getY() ]
-		dmod = [complex(0,1), complex(0,-1)]
-		dmod = [4*self.make_complex(self.update)*x for x in dmod]
-		print "Direction modifier", dmod
-		if get_pixel_colour(int(c[0]+dmod[0].real+check[0]), int(c[1]+dmod[0].imag+check[1]))==(255,255,255) or get_pixel_colour(int(c[0]+dmod[1].real+check[0]), int(c[1]+dmod[1].imag+check[1]))==(255,255,255):
-			return False
+	#	dmod = [complex(0,1), complex(0,-1)]
+	#	dmod = [4*self.make_complex(self.update)*x for x in dmod]
+		
+	#	if get_pixel_colour(int(c[0]+dmod[0].real+check[0]), int(c[1]+dmod[0].imag+check[1]))==(255,255,255) or get_pixel_colour(int(c[0]+dmod[1].real+check[0]), int(c[1]+dmod[1].imag+check[1]))==(255,255,255):
+	#		return False
 
+		if get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(255,255,255):
+			return False 
 		#Check for signal
 		if self.update[1]==0:
 			check = ([-(h/36)*x for x in self.update])
@@ -135,13 +123,12 @@ class makecar:
 			else:
 				return True
 
-		#Check right				
-		if get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(255,0,0):
+		#Check right		
+		#orange pixel = (255,165,0)		
+		if get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(255,0,0) or get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(255,165,0):
 			if (c[0] % (w/36) ==0) and (c[1] % (h/36) ==0):
-				print "leeel"
 				return False
 			else:
-				print "loool"
 				return True
 		if get_pixel_colour(int(c[0]+check[0]), int(c[1]+check[1]))==(0,128,0):
 			if (c[0] % (w/36) ==0) and (c[1] % (h/36) ==0):	
@@ -150,9 +137,6 @@ class makecar:
 			
 		return True
 	
-
-
-
 
 	def updateupdate(self):
 		choices = [complex(0,-1),complex(1,0),complex(1,0),complex(0,1)]
@@ -164,18 +148,14 @@ class makecar:
 
 		
 		self.prev = self.update
-		print "In updateupdate, prev:", self.prev
 		present = self.make_complex(self.update)*choice
 		update=[0,0]
 		update[0]=present.real
 		update[1]=present.imag
-		self.update = tuple(update)	
-
-		
+		self.update = tuple(update)		
 
 	def make_complex(self, c):
 		return complex(c[0],c[1])
-
 
 	def check_limits(self,c):
 		cx, cy = c.getX(), c.getY()
@@ -183,7 +163,6 @@ class makecar:
 			return True
 		else:
 			return False
-
 
 	def move(self):
 		if (self.check_limits(self.body.getCenter())):
