@@ -7,6 +7,7 @@ from PIL import Image as NewImage
 import random
 import time
 import ip
+import pishu_db as db
 
  #!/usr/bin/python
 '''
@@ -41,9 +42,10 @@ def main():
 	scene.draw_signal(sig_list)
 	w=win.getWidth()
 	h=win.getHeight()
+	db.delete()
 
 	for s in sig_list:
-		threading.Timer(3, s.const).start()
+		threading.Timer(0.5, s.const).start()
 	
 	fo = open("rand_car.txt","r")
 	
@@ -54,7 +56,7 @@ def main():
 				del car
 
 		#Generate cars randomly
-		if counter%10==0 and bool(int(fo.read())):
+		if counter%10==0 and bool(int(fo.read(1))):
 			car=car_master.makecar(win)				
 			car_list.append(car)
 
@@ -66,11 +68,10 @@ def main():
 				
 		
 			if s.checker2 == True:
-				ip.img_process(s)
 				s.change_orange()
 
 		counter = counter+1
-		time.sleep(0.005)
+		time.sleep(0.025)
 
 	
 	fo.close()

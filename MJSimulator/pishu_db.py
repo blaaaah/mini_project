@@ -1,8 +1,7 @@
 import mysql.connector as mc 
 
 
-db = mc.connect(host = "localhost",database = "node",user = "root",password = "pishudb")
-
+db = mc.connect(host = "localhost",database = "node",user = "root",password = "toughpassword123")
 cursor = db.cursor()
 
 def init(sid,di):
@@ -13,6 +12,7 @@ def init(sid,di):
 		if di == hai[i]:
 			break
 
+	print "**** INIT "+str(sid)+"  *****"
 	i = i - 1
 	while k!=0:
 		i=(i+1)%4
@@ -22,12 +22,12 @@ def init(sid,di):
 		db.commit()
 		k = k - 1;
 
-     	
+
 def update(id1,n,e,w,s):
-	sql = "SELECT * FROM selector WHERE ID = '%d' " % (id1)
+	sql = "SELECT * FROM selector WHERE ID="+str(id1)
 	cursor.execute(sql)
 	results = cursor.fetchone()
-	sql = "SELECT * FROM node WHERE ID = '%d' " % (id1)
+	sql = "SELECT * FROM node WHERE ID="+str(id1)
 	cursor.execute(sql)
 	resulter = cursor.fetchone()
 	n = resulter[1+results[1]]+','+str(n)
@@ -38,10 +38,17 @@ def update(id1,n,e,w,s):
 	s=','.join(s.split(',')[1:5])
 	e=','.join(e.split(',')[1:5])
 	w=','.join(w.split(',')[1:5])
-
+	
 	sql = "UPDATE node SET na"+str(results[1])+"='"+str(n)+"', wa"+str(results[2])+"='"+str(w)+"', sa"+str(results[3])+"='"+str(s)+"', ea"+str(results[4])+"='"+str(e)+"' WHERE ID = "+str(results[0])
 	cursor.execute(sql)
 	db.commit()
+
+	pi=["ni","si","wi","ei"]
+	for i in range(1,5):
+		sql = "UPDATE selector SET "+pi[i-1]+" = "+str((results[i]+1)%4)+" where ID = "+str(id1)
+		cursor.execute(sql)
+		db.commit()
+	
 
 
 def delete():
@@ -61,15 +68,20 @@ def get(id1):
 	sql = "SELECT * FROM node WHERE ID = '%d' " % (id1)
 	cursor.execute(sql)
 	results = cursor.fetchone()
+	results=list(results)
+	for i in range(1,17):
+		results[i]=list(map(int, results[i].split(",")))
 	return {'id':results[0],'n':results[1:5],'e':results[9:13],'w':results[13:17],'s':results[5:9]}
 
-def main():
+def geti(id1):
+	sql = "SELECT * FROM selector WHERE ID = '%d' " % (id1)
+	cursor.execute(sql)
+	results = cursor.fetchone()
+	return {'id':(results[0]-1)%4,'n':(results[1]-1)%4,'s':(results[2]-1)%4,'e':(results[3]-1)%4,'w':(results[4]-1)%4}
 	
-	init(9,'e')
-	init(3,'s')
-	init(5,'n')
-	init(7,'w')
+
+def main():
 	update(3,11,22,33,44)
 	print get(3)
 
-main()
+#main()

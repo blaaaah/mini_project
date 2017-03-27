@@ -14,7 +14,6 @@ def get_pixel_colour(i_x, i_y):
 	return tuple(o_gdk_pixbuf.get_pixels_array().tolist()[0][0])
 
 def img_process(s):
-
 	c = [[s.x-(w/18),s.y-(h/36)],[s.x-(w/36),s.y+(h/6)],[s.x+(w/6),s.y+(h/36)],[s.x+(w/36),s.y-(h/18)]]
 	
 	density = [0,0,0,0]
@@ -33,4 +32,5 @@ def img_process(s):
 			r=1
 		density[i]=q+r
 	
+	#print "id="+str(s.d)+"	n="+str(density[3])+"	e="+str(density[2])+"	w="+str(density[0])+"	s="+str(density[1])
 	db.update(s.d,density[3],density[2],density[0],density[1])

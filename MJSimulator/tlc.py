@@ -3,10 +3,14 @@ from graphics import *
 import threading
 import ip
 import pishu_db as db
+import algo_dennis as algo
+import inspect
 
 h = scene.ret_h()
 w = scene.ret_w()
 win = scene.ret_win()
+
+lock = threading.Lock()
 
 # signal light 
 class sLight:
@@ -99,11 +103,24 @@ class sLight:
 		self.active_signal = -1
 		self.cir[self.next_active_signal].setFill("orange")
 		self.checker = False
-		threading.Timer(2, self.changelight).start()  #TRANSITION TIME B/W SIGNAL
+		threading.Timer(1, self.changelight).start()  #TRANSITION TIME B/W SIGNAL
 
 	def const(self):
-		self.checker = True
-		threading.Timer(7,self.const).start()
+		global lock
+		lock.acquire()
+		caller = inspect.getouterframes(inspect.currentframe())[1][3]
+		if self.d == 1:		
+			print caller+" REQUESTING RESOURCE !!!!!!!"
+		try:
+			if self.d == 1:
+				print("**** LOCKING ****")
+			self.checker = True
+			ip.img_process(self)
+			numtodir = ['w','s','e','n']
+			timer_val = algo.calc_timer(self.d,numtodir[self.next_active_signal])
+			threading.Timer(1+timer_val,self.const).start()
+		finally:
+			lock.release()
 	
 	def changelight(self):
 		self.checker2 = True

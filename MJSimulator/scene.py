@@ -1,7 +1,7 @@
 from graphics import *
 import tlc
-win = GraphWin('Simulator', 900, 900)
-win.master.geometry('%dx%d+%d+%d' % (900, 900, 100, 50))
+win = GraphWin('Simulator', 720, 720)
+win.master.geometry('%dx%d+%d+%d' % (720, 720, 100, 50))
 w=win.getWidth()
 h=win.getHeight()
 sig_list=[]
