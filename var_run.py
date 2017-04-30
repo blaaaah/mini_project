@@ -45,6 +45,7 @@ timer_val=3
 c=0
 active_signal = 0
 car_w=[]
+car_counter=0
 
 
 def const():
@@ -235,7 +236,7 @@ def mycode():
 		
 		expden = float(( numpy.mean(n_den[3][:-1])+numpy.mean(s_den[3][:-1])+numpy.mean(e_den[3][:-1])+numpy.mean(w_den[3][:-1]) ) / 4 )
 		print "Expected DENSITY", expden
-		cr = 5
+		cr = 4.037
 		l = 3
 		timer_val = ( (rd * expden) / (l * cr) )
 		if timer_val == 0:
@@ -251,6 +252,7 @@ def changelight():
 	global checker2
 	checker2 = True
 
+	  
 def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 
 	#GLOBAL VARIABLES
@@ -272,7 +274,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
     global car_list_sr
 
     global car_w_time 
-
+    global car_counter
 
     global timer_val
     global c
@@ -320,6 +322,10 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 	if counter%100==0 and bool( int(fo.read(1)) ):
 		car=makecar('er',win)				
 		car_list_er.append(car)
+
+	#Print simulator status (CAR COUNTER)
+	if counter%5000==0:
+		print "\n**CARS PROCESSED: "+str(car_counter)+"\n"
 	
 
 	#Update all car levels 
@@ -361,6 +367,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 		if car.body.getCenter().getY()>h+20:
 			car_w_time.append(car.counter)
 			car_list_n.remove(car)
+			car_counter+=1
 			continue
 		if car.body.getCenter().getY()<n_level and active_signal!=3 and car_n_level-car.body.getCenter().getY() <= 10:
 			car.counter+=1			
@@ -372,6 +379,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			car_w_time.append(car.counter)
 			
 			car_list_s.remove(car)
+			car_counter+=1
 			continue			
 		if car.body.getCenter().getY()>s_level and active_signal!=1 and car.body.getCenter().getY()-car_s_level <= 10:
 			car.counter+=1			
@@ -383,6 +391,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			
 			car_w_time.append(car.counter)
 			car_list_e.remove(car)
+			car_counter+=1
 			continue			
 		if car.body.getCenter().getX()>e_level and active_signal!=2 and car.body.getCenter().getX()-car_e_level <= 10:
 			car_e_level=car_e_level+20
@@ -394,6 +403,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			
 			car_w_time.append(car.counter)
 			car_list_w.remove(car)
+			car_counter+=1
 			continue			
 		if car.body.getCenter().getX()<w_level and active_signal!=0 and car_w_level-car.body.getCenter().getX() <= 10:
 			car.counter+=1			
@@ -407,6 +417,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			car_w_time.append(car.counter)
 			
 			car_list_nl.remove(car)
+			car_counter+=1
 			continue
 		if car.body.getCenter().getY()<n_level and active_signal!=3 and car_nl_level-car.body.getCenter().getY() <= 10:
 			car.counter+=1			
@@ -418,6 +429,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			car_w_time.append(car.counter)
 			
 			car_list_sl.remove(car)
+			car_counter+=1
 			continue			
 		if car.body.getCenter().getY()>s_level and active_signal!=1 and car.body.getCenter().getY()-car_sl_level <= 10:
 			car.counter+=1			
@@ -429,6 +441,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			
 			car_w_time.append(car.counter)
 			car_list_el.remove(car)
+			car_counter+=1
 			continue			
 		if car.body.getCenter().getX()>e_level and active_signal!=2 and car.body.getCenter().getX()-car_el_level <= 10:
 			car_el_level=car_el_level+20
@@ -440,6 +453,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			
 			car_w_time.append(car.counter)
 			car_list_wl.remove(car)
+			car_counter+=1
 			continue			
 		if car.body.getCenter().getX()<w_level and active_signal!=0 and car_wl_level-car.body.getCenter().getX() <= 10:
 			car.counter+=1			
@@ -454,6 +468,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			car_w_time.append(car.counter)
 			
 			car_list_nr.remove(car)
+			car_counter+=1
 			continue
 		if car.body.getCenter().getY()<n_level and active_signal!=3 and car_nr_level-car.body.getCenter().getY() <= 10:
 			car.counter+=1			
@@ -475,6 +490,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			car_w_time.append(car.counter)
 			
 			car_list_sr.remove(car)
+			car_counter+=1
 			continue			
 		if car.body.getCenter().getY()>s_level and active_signal!=1 and car.body.getCenter().getY()-car_sr_level <= 10:
 			car.counter+=1			
@@ -496,6 +512,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			
 			car_w_time.append(car.counter)
 			car_list_er.remove(car)
+			car_counter+=1
 			continue			
 		if car.body.getCenter().getX()>e_level and active_signal!=2 and car.body.getCenter().getX()-car_er_level <= 10:
 			car_er_level=car_er_level+20
@@ -517,6 +534,7 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			
 			car_w_time.append(car.counter)
 			car_list_wr.remove(car)
+			car_counter+=1
 			continue			
 		if car.body.getCenter().getX()<w_level and active_signal!=0 and car_wr_level-car.body.getCenter().getX() <= 10:
 			car.counter+=1			
@@ -566,15 +584,13 @@ def func(win,h,w,counter,cir,n_level,w_level,s_level,e_level):
 			car.counter=0
 
 	#PRINT STANDARD DEVIATION
-	if c==40:
+	if car_counter==1000:
 		print "-----------------------------------------"
 		print "MEAN = ",numpy.mean(car_w_time)
 		print "STANDARD DEVIATION = ",numpy.std(car_w_time)
 		print "-----------------------------------------"
-		win.close()
 		plot_graph(car_w_time)
-	  
-
+		return 0
 
 
 def rotateX(x1,y1,x2,y2,theta):
